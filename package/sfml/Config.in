@@ -1,0 +1,61 @@
+config BR2_PACKAGE_SFML
+	bool "SFML"
+	help
+	  Simple and Fast Multimedia Library 2 - SFML provides a simple
+	  interface to the various components of your PC, to ease the
+	  development of games and multimedia applications. It is
+	  composed of five modules: system, window, graphics, audio and
+	  network.
+
+	  https://www.sfml-dev.org/
+
+if BR2_PACKAGE_SFML
+
+config BR2_PACKAGE_SFML_EXAMPLES
+	bool "examples"
+	help
+	  This boolean option controls whether the SFML examples are
+	  built alongside the library or not.
+
+comment "Window and Graphics modules needs X11 and an OpenGL provider"
+	depends on !BR2_PACKAGE_HAS_LIBGL || !BR2_PACKAGE_XORG7
+
+config BR2_PACKAGE_SFML_WINDOW
+	bool "window"
+	depends on BR2_PACKAGE_HAS_LIBGL && BR2_PACKAGE_XORG7 # for rendering
+	depends on BR2_PACKAGE_HAS_UDEV # SFML/Window/Unix/joystickImpl.hpp
+	help
+	  This boolean option controls whether the SFML window module is
+	  built or not.
+
+config BR2_PACKAGE_SFML_GRAPHICS
+	bool "graphics"
+	depends on BR2_PACKAGE_HAS_LIBGL && BR2_PACKAGE_XORG7 # window
+	depends on BR2_PACKAGE_HAS_UDEV # window
+	select BR2_PACKAGE_SFML_WINDOW
+	select BR2_PACKAGE_FREETYPE
+	select BR2_PACKAGE_JPEG
+	help
+	  This boolean option controls whether the SFML graphics module
+	  is built or not. This module allow 2D drawing functionalities.
+
+config BR2_PACKAGE_SFML_AUDIO
+	bool "audio"
+	depends on BR2_USE_WCHAR # flac
+	depends on BR2_INSTALL_LIBSTDCPP && BR2_TOOLCHAIN_HAS_THREADS_NPTL # openal
+	depends on BR2_PACKAGE_OPENAL_ARCH_SUPPORTS # openal
+	select BR2_PACKAGE_FLAC
+	select BR2_PACKAGE_LIBOGG
+	select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_OPENAL
+	help
+	  This boolean option controls whether the SFML audio module is
+	  built or not.
+
+config BR2_PACKAGE_SFML_NETWORK
+	bool "network"
+	help
+	  This boolean option controls whether the SFML network module
+	  is built or not.
+
+endif
